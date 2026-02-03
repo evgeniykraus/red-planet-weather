@@ -49,14 +49,17 @@ docker run --rm \
 # 5. Сгенерируйте ключ приложения
 ./vendor/bin/sail artisan key:generate
 
-# 6. Установите Node зависимости
+# 6. Создайте символическую ссылку на storage
+./vendor/bin/sail artisan storage:link
+
+# 7. Установите Node зависимости
 ./vendor/bin/sail npm install
 
-# 7. Выполните миграции и загрузите данные
+# 8. Выполните миграции и загрузите данные
 ./vendor/bin/sail artisan migrate:fresh
 ./vendor/bin/sail artisan db:seed --class=MarsWeatherSeeder
 
-# 8. Соберите frontend
+# 9. Соберите frontend
 ./vendor/bin/sail npm run build
 ```
 
