@@ -29,7 +29,7 @@
 
 ```bash
 # 1. Клонируйте репозиторий
-git clone <repository-url>
+git clone https://github.com/evgeniykraus/red-planet-weather.git
 cd red-planet-weather
 
 # 2. Создайте файл окружения
