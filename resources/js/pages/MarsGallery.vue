@@ -1,15 +1,12 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
-import Card from '@/components/ui/Card.vue';
-import Badge from '@/components/ui/Badge.vue';
 import MarkdownRenderer from '@/components/MarkdownRenderer.vue';
 import ImageLightbox from '@/components/ImageLightbox.vue';
-import ThemeToggle from '@/components/ThemeToggle.vue';
-import Select from '@/components/ui/Select.vue';
-import Button from '@/components/ui/Button.vue';
-import { ImageIcon, Filter, ArrowLeft } from 'lucide-vue-next';
-import mars from '@/routes/mars';
+import { useMarsAtmosphere, type AtmosphereConfig } from '@/composables/useMarsAtmosphere';
+import { atmosphereStore, updateAtmosphere, randomizeAtmosphere } from '@/store/atmosphere';
+import ControlPanel from '@/components/ares/ControlPanel.vue';
+import { ImageIcon, Filter, Home } from 'lucide-vue-next';
 
 interface MarsImage {
     id: number;
@@ -29,10 +26,21 @@ interface Props {
 const props = defineProps<Props>();
 
 const selectedMonth = ref<number | null>(null);
+const canvasRef = ref<HTMLCanvasElement | null>(null);
 
 // Состояние lightbox
 const isLightboxOpen = ref(false);
 const currentImageIndex = ref(0);
+
+useMarsAtmosphere(canvasRef);
+
+const updateConfig = (newConfig: AtmosphereConfig) => {
+    updateAtmosphere(newConfig);
+};
+
+const handleRandomize = () => {
+    randomizeAtmosphere();
+};
 
 const filteredImages = computed(() => {
     const filtered = selectedMonth.value 
@@ -74,124 +82,170 @@ const openLightbox = (image: MarsImage) => {
 const closeLightbox = () => {
     isLightboxOpen.value = false;
 };
+
+onMounted(() => {
+    // Canvas logic is handled by useMarsAtmosphere
+});
 </script>
 
 <template>
-    <Head title="Галерея изображений Марса" />
+    <Head title="ARES ARCHIVE - Галерея изображений" />
     
-    <div class="min-h-screen bg-gradient-to-b from-orange-50 via-red-50 to-orange-100 dark:from-gray-900 dark:via-red-950 dark:to-gray-900 py-8 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-7xl mx-auto space-y-8">
-            <!-- Navigation (Back Button & Theme Toggle) -->
-            <div class="flex justify-end gap-4 items-center">
-                <Link :href="mars.index.url()">
-                    <Button variant="outline" size="sm">
-                        <ArrowLeft class="w-4 h-4 mr-2" />
-                        Назад
-                    </Button>
-                </Link>
-                <ThemeToggle />
-            </div>
+    <div class="relative min-h-screen overflow-hidden bg-deep-background">
+        <!-- Canvas Background -->
+        <canvas
+            ref="canvasRef"
+            class="fixed inset-0 w-full h-full"
+            style="z-index: 1"
+        ></canvas>
 
+        <!-- Main Content -->
+        <div class="relative z-10">
             <!-- Header -->
-            <header class="text-center -mt-4">
-                <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                    Галерея изображений Марса
-                </h1>
-                <p class="text-lg text-gray-600 dark:text-gray-400">
-                    Всего изображений: {{ images.length }}
-                </p>
-            </header>
-            
-            <!-- Фильтр по месяцам -->
-            <Card class="mb-8 p-6">
-                <div class="flex items-center gap-4">
-                    <Filter class="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                    <div class="flex-1">
-                        <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                            Фильтр по месяцу
-                        </label>
-                        <select 
-                            v-model="selectedMonth"
-                            class="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2 text-gray-900 dark:text-gray-100 cursor-pointer"
-                        >
-                            <option :value="null">Все месяцы</option>
-                            <option 
-                                v-for="m in monthsWithImages" 
-                                :key="m" 
-                                :value="m"
+            <header class="border-b border-primary-orange/30 bg-deep-background/80 backdrop-blur-md">
+                <div class="max-w-7xl mx-auto px-6 py-6">
+                    <div class="flex items-center justify-between">
+                        <!-- Logo -->
+                        <div>
+                            <h1 class="text-primary-orange text-4xl font-bold uppercase tracking-wider font-orbitron mb-1">
+                                ARES <span class="text-white">GALLERY</span>
+                            </h1>
+                            <p class="text-text-muted text-sm uppercase tracking-widest font-rajdhani">
+                                Архив сгенерированных изображений
+                            </p>
+                        </div>
+
+                        <!-- Navigation & Stats -->
+                        <div class="flex items-center gap-6">
+                            <!-- Home Button -->
+                            <Link 
+                                href="/"
+                                class="flex items-center gap-2 px-4 py-2 bg-primary-orange/10 hover:bg-primary-orange/20 border border-primary-orange/30 hover:border-primary-orange rounded-lg transition-all text-primary-orange hover:text-white"
                             >
-                                Месяц {{ m }}
-                            </option>
-                        </select>
+                                <Home :size="18" />
+                                <span class="text-sm uppercase tracking-wide font-rajdhani font-semibold">Главная</span>
+                            </Link>
+
+                            <!-- Stats -->
+                            <div class="text-right">
+                                <div class="text-text-muted text-sm uppercase tracking-wide mb-1">
+                                    Всего изображений
+                                </div>
+                                <div class="text-primary-orange text-4xl font-bold font-mono">
+                                    {{ images.length }}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </Card>
-            
-            <!-- Галерея по месяцам -->
-            <div v-for="(monthImages, month) in imagesByMonth" :key="month" class="mb-12">
-                <h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
-                    Месяц {{ month }}
-                    <Badge variant="default" class="ml-2">
-                        {{ monthImages.length }} изображений
-                    </Badge>
-                </h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <Card 
-                        v-for="image in monthImages" 
-                        :key="image.id"
-                        variant="mars"
-                        class="overflow-hidden cursor-pointer hover:shadow-xl transition-shadow"
-                    >
-                        <!-- Изображение -->
+            </header>
+
+            <!-- Main Content Area -->
+            <div class="max-w-7xl mx-auto px-6 py-8 space-y-8">
+                <!-- Filter -->
+                <div class="bg-card-glass backdrop-blur-md border border-primary-orange/30 rounded-lg p-6">
+                    <div class="flex items-center gap-4">
+                        <Filter class="w-6 h-6 text-primary-orange" />
+                        <div class="flex-1">
+                            <label class="block text-sm font-medium mb-2 text-white uppercase tracking-wide">
+                                Фильтр по месяцу
+                            </label>
+                            <select 
+                                v-model="selectedMonth"
+                                class="w-full bg-deep-background border border-primary-orange/30 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-primary-orange transition-colors cursor-pointer"
+                            >
+                                <option :value="null">Все месяцы</option>
+                                <option 
+                                    v-for="m in monthsWithImages" 
+                                    :key="m" 
+                                    :value="m"
+                                >
+                                    Месяц {{ m }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gallery by Month -->
+                <div v-for="(monthImages, month) in imagesByMonth" :key="month" class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <h2 class="text-white text-2xl font-bold uppercase tracking-wider font-orbitron">
+                            Месяц {{ month }}
+                        </h2>
+                        <div class="px-3 py-1 bg-primary-orange/30 border border-primary-orange rounded-lg">
+                            <span class="text-white text-sm font-bold">
+                                {{ monthImages.length }}
+                            </span>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-primary-orange/30"></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div 
-                            class="relative aspect-video bg-gray-200 dark:bg-gray-800"
+                            v-for="image in monthImages" 
+                            :key="image.id"
+                            class="bg-card-glass backdrop-blur-md border border-primary-orange/30 rounded-lg overflow-hidden hover:border-primary-orange transition-all hover:shadow-2xl hover:shadow-primary-orange/20 group cursor-pointer"
                             @click="openLightbox(image)"
                         >
-                            <img 
-                                :src="image.image_url" 
-                                :alt="`Mars Month ${image.mars_month}`"
-                                class="w-full h-full object-cover"
-                                loading="lazy"
-                            />
-                            <div class="absolute inset-0 bg-black/0 hover:bg-black/10 transition-colors flex items-center justify-center">
-                                <ImageIcon class="w-12 h-12 text-white opacity-0 hover:opacity-100 transition-opacity" />
-                            </div>
-                        </div>
-                        
-                        <!-- Информация -->
-                        <div class="p-4">
-                            <div class="flex items-center justify-between mb-2">
-                                <Badge>Месяц {{ image.mars_month }}</Badge>
-                                <span class="text-xs text-gray-500 dark:text-gray-400">
-                                    {{ new Date(image.created_at).toLocaleDateString('ru') }}
-                                </span>
-                            </div>
-                            
-                            <!-- Интерпретация (свернутая) -->
-                            <details class="mt-2">
-                                <summary class="cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400">
-                                    Показать интерпретацию
-                                </summary>
-                                <div class="mt-2 text-sm">
-                                    <MarkdownRenderer :content="image.interpretation" />
+                            <!-- Image -->
+                            <div class="relative aspect-video bg-deep-background/50">
+                                <img 
+                                    :src="image.image_url" 
+                                    :alt="`Mars Month ${image.mars_month}`"
+                                    class="w-full h-full object-cover"
+                                    loading="lazy"
+                                />
+                                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                                    <ImageIcon class="w-12 h-12 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                                 </div>
-                            </details>
+                            </div>
+
+                            <!-- Info -->
+                            <div class="p-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="px-3 py-1 bg-primary-orange/20 border border-primary-orange/30 rounded">
+                                        <span class="text-primary-orange text-xs font-bold uppercase">
+                                            Месяц {{ image.mars_month }}
+                                        </span>
+                                    </div>
+                                    <span class="text-xs text-text-muted font-mono">
+                                        {{ new Date(image.created_at).toLocaleDateString('ru') }}
+                                    </span>
+                                </div>
+
+                                <!-- Interpretation -->
+                                <details class="mt-2">
+                                    <summary class="cursor-pointer text-sm font-medium text-white hover:text-primary-orange uppercase tracking-wide list-none flex items-center gap-2">
+                                        <span class="text-primary-orange">▸</span> Интерпретация ИИ
+                                    </summary>
+                                    <div class="mt-3 pl-4 border-l border-primary-orange/20">
+                                        <MarkdownRenderer :content="image.interpretation" />
+                                    </div>
+                                </details>
+                            </div>
                         </div>
-                    </Card>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div v-if="filteredImages.length === 0" class="bg-card-glass backdrop-blur-md border border-primary-orange/30 rounded-lg p-12 text-center">
+                    <ImageIcon class="w-16 h-16 mx-auto text-primary-orange/50 mb-4" />
+                    <p class="text-text-muted text-lg">
+                        Нет изображений для отображения
+                    </p>
                 </div>
             </div>
-            
-            <!-- Пустое состояние -->
-            <div v-if="filteredImages.length === 0" class="text-center py-12">
-                <ImageIcon class="w-16 h-16 mx-auto text-gray-400 mb-4" />
-                <p class="text-gray-600 dark:text-gray-400">
-                    Нет изображений для отображения
-                </p>
-            </div>
         </div>
-        
-        <!-- Lightbox для просмотра изображений -->
+
+        <!-- Control Panel -->
+        <ControlPanel
+            :config="atmosphereStore"
+            @update="updateConfig"
+            @randomize="handleRandomize"
+        />
+
+        <!-- Lightbox -->
         <ImageLightbox
             :images="filteredImages"
             :initial-index="currentImageIndex"
@@ -200,3 +254,10 @@ const closeLightbox = () => {
         />
     </div>
 </template>
+
+<style>
+/* Ensure the canvas is behind content but visible */
+canvas {
+    pointer-events: none;
+}
+</style>

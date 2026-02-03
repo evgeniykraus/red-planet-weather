@@ -19,22 +19,22 @@ class MarsWeatherTest extends TestCase
 
     public function test_index_page_loads(): void
     {
-        $response = $this->get(route('mars.index'));
+        $response = $this->get(route('ares.archive'));
 
         $response->assertOk();
         $response->assertInertia(fn ($page) => $page
-            ->component('MarsWeather')
+            ->component('AresArchive')
             ->has('availableMonths', 12)
         );
     }
 
     public function test_statistics_page_returns_data(): void
     {
-        $response = $this->get(route('mars.statistics', ['mars_month' => 5]));
+        $response = $this->get(route('ares.statistics', ['mars_month' => 5]));
 
         $response->assertOk();
         $response->assertInertia(fn ($page) => $page
-            ->component('MarsWeather')
+            ->component('AresArchive')
             ->where('selectedMonth', 5)
             ->has('statistics')
             ->where('statistics.month', 5)
@@ -45,14 +45,14 @@ class MarsWeatherTest extends TestCase
 
     public function test_invalid_month_returns_validation_error(): void
     {
-        $response = $this->get(route('mars.statistics', ['mars_month' => 13]));
+        $response = $this->get(route('ares.statistics', ['mars_month' => 13]));
 
         $response->assertSessionHasErrors('mars_month');
     }
 
     public function test_missing_month_returns_validation_error(): void
     {
-        $response = $this->get(route('mars.statistics'));
+        $response = $this->get(route('ares.statistics'));
 
         $response->assertSessionHasErrors('mars_month');
     }

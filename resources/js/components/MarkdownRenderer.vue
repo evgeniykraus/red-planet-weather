@@ -24,7 +24,7 @@ const renderedContent = computed(() => {
 
 <template>
     <div 
-        class="prose max-w-none text-gray-700 dark:text-white"
+        class="prose prose-sm max-w-none prose-invert text-white prose-p:text-white prose-headings:text-white prose-strong:text-primary-orange prose-ul:text-white prose-li:text-white prose-ol:text-white [&_li]:text-white [&_p]:text-white prose-a:text-primary-orange hover:prose-a:text-white"
         v-html="renderedContent"
     />
 </template>

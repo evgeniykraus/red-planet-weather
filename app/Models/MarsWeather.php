@@ -39,7 +39,7 @@ class MarsWeather extends Model
     protected function marsMonth(): Attribute
     {
         return Attribute::make(
-            get: fn() => (int) floor($this->ls / 30) + 1,
+            get: fn () => (int) floor($this->ls / 30) + 1,
         );
     }
 }

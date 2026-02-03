@@ -9,15 +9,13 @@ readonly class MarsWeatherService
 {
     public function __construct(
         private MarsWeatherRepositoryInterface $marsWeatherRepository
-    )
-    {
-    }
+    ) {}
 
     public function getMonthStatistics(int $marsMonth): ?array
     {
         $rawData = $this->marsWeatherRepository->getMonthStatistics($marsMonth);
 
-        if (!$rawData) {
+        if (! $rawData) {
             return null;
         }
 
@@ -31,9 +29,9 @@ readonly class MarsWeatherService
             'season_description' => $monthInfo['season_description'],
             'statistics' => [
                 'average_temp' => round($rawData['average_temp'], 1),
-                'absolute_min' => (int)$rawData['absolute_min'],
-                'absolute_max' => (int)$rawData['absolute_max'],
-                'total_sols' => (int)$rawData['total_sols'],
+                'absolute_min' => (int) $rawData['absolute_min'],
+                'absolute_max' => (int) $rawData['absolute_max'],
+                'total_sols' => (int) $rawData['total_sols'],
             ],
             'date_range' => [
                 'first_date' => $this->formatDateRussian($rawData['first_date']),
@@ -42,8 +40,8 @@ readonly class MarsWeatherService
                 'last_date_raw' => $rawData['last_date'],
             ],
             'ls_actual' => [
-                'min' => (int)$rawData['min_ls'],
-                'max' => (int)$rawData['max_ls'],
+                'min' => (int) $rawData['min_ls'],
+                'max' => (int) $rawData['max_ls'],
             ],
         ];
     }

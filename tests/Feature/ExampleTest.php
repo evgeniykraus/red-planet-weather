@@ -11,7 +11,7 @@ class ExampleTest extends TestCase
 
     public function test_returns_a_successful_response()
     {
-        $response = $this->get(route('mars.index'));
+        $response = $this->get(route('ares.archive'));
 
         $response->assertOk();
     }

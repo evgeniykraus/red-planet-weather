@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { X, ChevronLeft, ChevronRight } from 'lucide-vue-next';
-import Badge from './ui/Badge.vue';
 import MarkdownRenderer from './MarkdownRenderer.vue';
 
 interface Image {
@@ -106,7 +105,7 @@ onUnmounted(() => {
                 <!-- Кнопка закрытия -->
                 <button
                     @click="close"
-                    class="absolute top-4 right-4 p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer z-10"
+                    class="absolute top-4 right-4 p-2 rounded-lg bg-primary-orange/10 hover:bg-primary-orange/20 border border-primary-orange/30 hover:border-primary-orange text-primary-orange hover:text-white transition-all cursor-pointer z-10"
                     aria-label="Закрыть"
                 >
                     <X class="w-6 h-6" />
@@ -114,9 +113,9 @@ onUnmounted(() => {
 
                 <!-- Счетчик изображений -->
                 <div class="absolute top-4 left-4 z-10">
-                    <Badge variant="default">
+                    <div class="px-3 py-1 bg-deep-background/80 backdrop-blur-md border border-primary-orange/30 rounded text-white font-mono text-sm">
                         {{ currentIndex + 1 }} / {{ images.length }}
-                    </Badge>
+                    </div>
                 </div>
 
                 <!-- Контейнер слайдера -->
@@ -125,32 +124,36 @@ onUnmounted(() => {
                     <button
                         v-if="canGoPrev"
                         @click="goToPrev"
-                        class="absolute left-4 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer z-10"
+                        class="absolute left-4 p-3 rounded-full bg-primary-orange/10 hover:bg-primary-orange/20 border border-primary-orange/30 hover:border-primary-orange text-primary-orange hover:text-white transition-all cursor-pointer z-10"
                         aria-label="Предыдущее изображение"
                     >
                         <ChevronLeft class="w-8 h-8" />
                     </button>
 
                     <!-- Основной контент -->
-                    <div class="max-w-7xl w-full h-full flex flex-col lg:flex-row gap-6 items-stretch">
+                    <div class="max-w-7xl w-full h-full flex flex-col lg:flex-row gap-6 items-stretch pt-12 pb-4 lg:py-0">
                         <!-- Изображение -->
-                        <div class="flex-1 flex items-center justify-center min-h-0 overflow-hidden">
+                        <div class="flex-1 flex items-center justify-center min-h-[40vh] lg:min-h-0 overflow-hidden">
                             <Transition name="slide-fade" mode="out-in">
                                 <img
                                     :key="currentImage.id"
                                     :src="currentImage.image_url"
                                     :alt="`Mars Month ${currentImage.mars_month}`"
-                                    class="max-w-full max-h-[80vh] lg:max-h-full object-contain rounded-lg shadow-2xl"
+                                    class="max-w-full max-h-[50vh] lg:max-h-full object-contain rounded-lg shadow-2xl"
                                 />
                             </Transition>
                         </div>
 
                         <!-- Информация -->
-                        <div class="lg:w-96 bg-white dark:bg-gray-900 rounded-lg p-6 overflow-y-auto lg:max-h-[85vh] flex-shrink-0 border border-gray-200 dark:border-gray-700">
+                        <div class="lg:w-96 bg-deep-background/90 backdrop-blur-md rounded-lg p-6 overflow-y-auto max-h-[40vh] lg:max-h-[85vh] flex-shrink-0 border border-primary-orange/30">
                             <div class="mb-4">
                                 <div class="flex items-center justify-between mb-3">
-                                    <Badge>Месяц {{ currentImage.mars_month }}</Badge>
-                                    <span class="text-xs text-gray-500 dark:text-gray-400">
+                                    <div class="px-3 py-1 bg-primary-orange/20 border border-primary-orange/30 rounded">
+                                        <span class="text-primary-orange text-xs font-bold uppercase font-orbitron">
+                                            Месяц {{ currentImage.mars_month }}
+                                        </span>
+                                    </div>
+                                    <span class="text-xs text-text-muted font-mono font-rajdhani uppercase tracking-wider">
                                         {{ new Date(currentImage.created_at).toLocaleDateString('ru', { 
                                             day: 'numeric',
                                             month: 'long',
@@ -158,9 +161,9 @@ onUnmounted(() => {
                                         }) }}
                                     </span>
                                 </div>
-                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                                    <span class="text-2xl">🤖</span>
-                                    Интерпретация AI
+                                <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2 font-orbitron uppercase tracking-wider">
+                                    <span class="text-primary-orange">▸</span>
+                                    Интерпретация ИИ
                                 </h3>
                                 <div class="prose-sm">
                                     <MarkdownRenderer :content="currentImage.interpretation" />
@@ -173,7 +176,7 @@ onUnmounted(() => {
                     <button
                         v-if="canGoNext"
                         @click="goToNext"
-                        class="absolute right-4 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer z-10"
+                        class="absolute right-4 p-3 rounded-full bg-primary-orange/10 hover:bg-primary-orange/20 border border-primary-orange/30 hover:border-primary-orange text-primary-orange hover:text-white transition-all cursor-pointer z-10"
                         aria-label="Следующее изображение"
                     >
                         <ChevronRight class="w-8 h-8" />

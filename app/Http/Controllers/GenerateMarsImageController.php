@@ -29,7 +29,7 @@ class GenerateMarsImageController extends Controller
         $result = $this->imageService->generateMarsImage($marsMonth, $weatherData);
 
         // Редирект обратно на главную страницу с данными о сгенерированном изображении
-        return redirect()->route('mars.index')->with([
+        return redirect()->route('ares.archive')->with([
             'generatedImage' => $result,
             'marsMonth' => $marsMonth,
         ]);

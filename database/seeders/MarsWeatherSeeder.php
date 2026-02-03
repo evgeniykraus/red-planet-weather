@@ -8,16 +8,14 @@ use Illuminate\Support\Carbon;
 
 class MarsWeatherSeeder extends Seeder
 {
-    /**
-     * @return void
-     */
     public function run(): void
     {
         // 1. Путь к файлу
         $filePath = database_path('seeders/csv/mars_weather.csv');
 
-        if (!file_exists($filePath)) {
+        if (! file_exists($filePath)) {
             $this->command->error("Файл не найден по пути: $filePath");
+
             return;
         }
 
@@ -35,11 +33,11 @@ class MarsWeatherSeeder extends Seeder
 
         while (($row = fgetcsv($file)) !== false) {
             // Парсинг строки (обрабатываем "мусор" типа "--")
-            $ls = (int)$row[2];
+            $ls = (int) $row[2];
             $marsMonth = (int) floor($ls / 30) + 1;
-            
+
             $data[] = [
-                'sol' => (int)$row[0],
+                'sol' => (int) $row[0],
                 'earth_date' => $row[1],
                 'ls' => $ls,
                 'mars_month' => $marsMonth,
@@ -63,7 +61,7 @@ class MarsWeatherSeeder extends Seeder
         }
 
         // Дописываем остатки, если они есть
-        if (!empty($data)) {
+        if (! empty($data)) {
             $this->insertData($data);
         }
 
@@ -92,20 +90,17 @@ class MarsWeatherSeeder extends Seeder
                 'atmo_opacity',
                 'sunrise',
                 'sunset',
-                'updated_at'
+                'updated_at',
             ]
         );
     }
 
-    /**
-     * @param string|null $value
-     * @return string|null
-     */
     private function cleanNumber(?string $value): ?string
     {
         if ($value === null || $value === '' || $value === '--') {
             return null;
         }
+
         return $value;
     }
 }

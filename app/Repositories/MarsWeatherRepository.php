@@ -26,7 +26,7 @@ class MarsWeatherRepository implements MarsWeatherRepositoryInterface
             ->whereNotNull('max_temp')
             ->first();
 
-        if (!$result || $result->total_sols === 0) {
+        if (! $result || $result->total_sols === 0) {
             return null;
         }
 
