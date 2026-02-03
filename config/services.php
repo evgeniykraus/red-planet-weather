@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'bothub' => [
+        'base_url' => env('BOTHUB_BASE_URL', 'https://bothub.chat/api/v2/openai/v1'),
+        'api_key' => env('BOTHUB_API_KEY'),
+        'model' => env('BOTHUB_MODEL', 'gemini-2.5-flash-image'),
+    ],
+
 ];

@@ -17,6 +17,8 @@ class MarsWeatherController extends Controller
     {
         return Inertia::render('MarsWeather', [
             'availableMonths' => range(1, 12),
+            'generatedImage' => session('generatedImage'),
+            'selectedMonth' => session('marsMonth'),
         ]);
     }
 

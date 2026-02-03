@@ -1,40 +1,43 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
+import { Head, useForm, Link } from '@inertiajs/vue3';
+import { watch } from 'vue';
 import MonthSearch from '@/components/MonthSearch.vue';
 import MonthStatistics from '@/components/MonthStatistics.vue';
+import MarsImageDisplay from '@/components/MarsImageDisplay.vue';
 import MarsInfo from '@/components/MarsInfo.vue';
 import ThemeToggle from '@/components/ThemeToggle.vue';
-import { Globe } from 'lucide-vue-next';
-
-interface Statistics {
-    month: number;
-    month_name: string;
-    ls_range: string;
-    season: string;
-    season_description: string;
-    statistics: {
-        average_temp: number;
-        absolute_min: number;
-        absolute_max: number;
-        total_sols: number;
-    };
-    date_range: {
-        first_date: string;
-        last_date: string;
-    };
-    ls_actual: {
-        min: number;
-        max: number;
-    };
-}
+import Button from '@/components/ui/Button.vue';
+import { Globe, Sparkles, ImageIcon } from 'lucide-vue-next';
+import type { Statistics, GeneratedImage } from '@/types/mars';
+import GenerateMarsImage from '@/actions/App/Http/Controllers/GenerateMarsImageController';
+import mars from '@/routes/mars';
 
 interface Props {
     availableMonths: number[];
     statistics?: Statistics | null;
     selectedMonth?: number;
+    generatedImage?: GeneratedImage | null;
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
+
+const form = useForm({
+    mars_month: props.selectedMonth || 1,
+});
+
+// Update form when selectedMonth changes
+watch(() => props.selectedMonth, (newMonth) => {
+    if (newMonth) {
+        form.mars_month = newMonth;
+    }
+});
+
+const generateImage = () => {
+    form.post(GenerateMarsImage.url(), {
+        preserveScroll: true,
+        preserveState: true,
+    });
+};
 </script>
 
 <template>
@@ -43,9 +46,15 @@ defineProps<Props>();
     </Head>
 
     <div class="min-h-screen bg-gradient-to-b from-orange-50 via-red-50 to-orange-100 dark:from-gray-900 dark:via-red-950 dark:to-gray-900 py-8 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-6xl mx-auto space-y-8">
-            <!-- Theme Toggle (верхний правый угол) -->
-            <div class="flex justify-end">
+        <div class="max-w-7xl mx-auto space-y-8">
+            <!-- Theme Toggle & Gallery Link (верхний правый угол) -->
+            <div class="flex justify-end gap-4 items-center">
+                <Link :href="mars.gallery.url()">
+                    <Button variant="outline" size="sm">
+                        <ImageIcon class="w-4 h-4 mr-2" />
+                        Галерея
+                    </Button>
+                </Link>
                 <ThemeToggle />
             </div>
 
@@ -70,6 +79,26 @@ defineProps<Props>();
                 />
             </div>
 
+            <!-- Generate Image Button -->
+            <transition
+                enter-active-class="transition duration-300 ease-out"
+                enter-from-class="opacity-0 transform scale-95"
+                enter-to-class="opacity-100 transform scale-100"
+            >
+                <div v-if="selectedMonth && !generatedImage" class="flex justify-center">
+                    <Button
+                        @click="generateImage"
+                        :loading="form.processing"
+                        :disabled="form.processing"
+                        size="lg"
+                        class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl"
+                    >
+                        <Sparkles v-if="!form.processing" class="w-5 h-5 mr-2" />
+                        {{ form.processing ? 'Генерация изображения...' : 'Сгенерировать изображение Марса' }}
+                    </Button>
+                </div>
+            </transition>
+
             <!-- Statistics Display -->
             <transition
                 enter-active-class="transition duration-500 ease-out"
@@ -81,6 +110,20 @@ defineProps<Props>();
             >
                 <div v-if="statistics" class="animate-fade-in">
                     <MonthStatistics :statistics="statistics" />
+                </div>
+            </transition>
+
+            <!-- Generated Image Display -->
+            <transition
+                enter-active-class="transition duration-500 ease-out"
+                enter-from-class="opacity-0 transform scale-95"
+                enter-to-class="opacity-100 transform scale-100"
+                leave-active-class="transition duration-300 ease-in"
+                leave-from-class="opacity-100 transform scale-100"
+                leave-to-class="opacity-0 transform scale-95"
+            >
+                <div v-if="generatedImage" class="animate-fade-in">
+                    <MarsImageDisplay :generated-image="generatedImage" />
                 </div>
             </transition>
 

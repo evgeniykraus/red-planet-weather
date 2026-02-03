@@ -35,7 +35,7 @@ onMounted(() => {
 <template>
     <button
         @click="toggleTheme"
-        class="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 shadow-sm"
+        class="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 shadow-sm cursor-pointer"
         :title="isDark ? 'Переключить на светлую тему' : 'Переключить на темную тему'"
         aria-label="Переключить тему"
     >

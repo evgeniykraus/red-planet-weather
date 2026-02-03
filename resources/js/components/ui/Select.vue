@@ -20,7 +20,7 @@ const emit = defineEmits<{
 const selectClasses = computed(() => {
     const base = 'w-full px-4 py-2 text-base border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all duration-200';
     const colors = 'border-orange-200 bg-white dark:bg-gray-800 dark:border-orange-800 text-gray-900 dark:text-gray-100';
-    const disabled = props.disabled ? 'opacity-50 .cursor-not-allowed' : '.cursor-pointer';
+    const disabled = props.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer';
 
     return `${base} ${colors} ${disabled}`;
 });

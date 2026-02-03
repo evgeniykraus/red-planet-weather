@@ -34,7 +34,7 @@ const buttonClasses = computed(() => {
         lg: 'px-6 py-3 text-lg',
     };
 
-    const disabled = props.disabled || props.loading ? 'opacity-50 .cursor-not-allowed' : '.cursor-pointer';
+    const disabled = props.disabled || props.loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer';
 
     return `${base} ${variants[props.variant]} ${sizes[props.size]} ${disabled}`;
 });

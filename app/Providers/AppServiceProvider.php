@@ -19,6 +19,16 @@ class AppServiceProvider extends ServiceProvider
             \App\Repositories\Contracts\MarsWeatherRepositoryInterface::class,
             \App\Repositories\MarsWeatherRepository::class
         );
+
+        $this->app->bind(
+            \App\Repositories\Contracts\MarsImageRepositoryInterface::class,
+            \App\Repositories\MarsImageRepository::class
+        );
+
+        $this->app->bind(
+            \App\Clients\Contracts\BothubClientInterface::class,
+            \App\Clients\BothubClient::class
+        );
     }
 
     /**
