@@ -3,6 +3,7 @@ import { Head } from '@inertiajs/vue3';
 import MonthSearch from '@/components/MonthSearch.vue';
 import MonthStatistics from '@/components/MonthStatistics.vue';
 import MarsInfo from '@/components/MarsInfo.vue';
+import ThemeToggle from '@/components/ThemeToggle.vue';
 import { Globe } from 'lucide-vue-next';
 
 interface Statistics {
@@ -37,18 +38,23 @@ defineProps<Props>();
 </script>
 
 <template>
-    <Head title="Монитор погоды на Марсе">
+    <Head title="Данные о погоде на Марсе">
         <meta name="description" content="Исследуйте данные о марсианской погоде, собранные марсоходом NASA Curiosity">
     </Head>
 
     <div class="min-h-screen bg-gradient-to-b from-orange-50 via-red-50 to-orange-100 dark:from-gray-900 dark:via-red-950 dark:to-gray-900 py-8 px-4 sm:px-6 lg:px-8">
         <div class="max-w-6xl mx-auto space-y-8">
+            <!-- Theme Toggle (верхний правый угол) -->
+            <div class="flex justify-end">
+                <ThemeToggle />
+            </div>
+
             <!-- Header -->
-            <header class="text-center">
+            <header class="text-center -mt-4">
                 <div class="flex items-center justify-center mb-4">
                     <Globe class="w-12 h-12 sm:w-16 sm:h-16 text-orange-600 mr-3 animate-pulse" />
                     <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600">
-                        Монитор погоды на Марсе
+                        Данные о погоде на Марсе
                     </h1>
                 </div>
                 <p class="text-lg sm:text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
@@ -95,15 +101,6 @@ defineProps<Props>();
                     <div class="text-center md:text-right">
                         <div class="mb-1">
                             Создано с ❤️ на <span class="text-gray-700 dark:text-gray-300">Laravel</span> + <span class="text-gray-700 dark:text-gray-300">Vue 3</span>
-                        </div>
-                        <div class="text-xs opacity-60 hover:opacity-100 transition">
-                            Данные из <a
-                                href="https://api.maas2.apollorion.com"
-                                target="_blank"
-                                class="text-orange-600 hover:text-orange-700 underline"
-                            >
-                                Apollorion MAAS API
-                            </a>
                         </div>
                     </div>
 

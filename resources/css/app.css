@@ -6,3 +6,6 @@
 @theme inline {
     --font-sans: Instrument Sans, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/* Enable class-based dark mode for Tailwind v4 */
+@variant dark (.dark &);
